@@ -122,3 +122,43 @@ AH00558: apache2: Could not reliably determine the server's fully qualified doma
 AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.20.1.10. Set the 'ServerName' directive globally to suppress this message
 [Tue Sep 23 13:58:12.385697 2025] [mpm_event:notice] [pid 21:tid 281473007812640] AH00489: Apache/2.4.52 (Ubuntu) OpenSSL/3.0.2 mod_wsgi/4.9.0 Python/3.10 configured -- resuming normal operations
 [Tue Sep 23 13:58:12.385756 2025] [core:notice] [pid 21:tid 281473007812640] AH00094: Command line: '/usr/sbin/apache2 -D FOREGROUND'
+[Tue Sep 23 14:17:54.600441 2025] [:notice] [pid 21:tid 281473135337504] ModSecurity for Apache/2.9.5 (http://www.modsecurity.org/) configured.
+[Tue Sep 23 14:17:54.601255 2025] [:notice] [pid 21:tid 281473135337504] ModSecurity: APR compiled version="1.7.0"; loaded version="1.7.0"
+[Tue Sep 23 14:17:54.601355 2025] [:notice] [pid 21:tid 281473135337504] ModSecurity: PCRE compiled version="8.39 "; loaded version="8.39 2016-06-14"
+[Tue Sep 23 14:17:54.601517 2025] [:notice] [pid 21:tid 281473135337504] ModSecurity: LUA compiled version="Lua 5.1"
+[Tue Sep 23 14:17:54.604844 2025] [:notice] [pid 21:tid 281473135337504] ModSecurity: YAJL compiled version="2.1.0"
+[Tue Sep 23 14:17:54.605049 2025] [:notice] [pid 21:tid 281473135337504] ModSecurity: LIBXML compiled version="2.9.12"
+[Tue Sep 23 14:17:54.605148 2025] [:notice] [pid 21:tid 281473135337504] ModSecurity: Status engine is currently disabled, enable it by set SecStatusEngine to On.
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.20.1.10. Set the 'ServerName' directive globally to suppress this message
+[Tue Sep 23 14:17:54.679670 2025] [mpm_event:notice] [pid 21:tid 281473135337504] AH00489: Apache/2.4.52 (Ubuntu) OpenSSL/3.0.2 mod_wsgi/4.9.0 Python/3.10 configured -- resuming normal operations
+[Tue Sep 23 14:17:54.679754 2025] [core:notice] [pid 21:tid 281473135337504] AH00094: Command line: '/usr/sbin/apache2 -D FOREGROUND'
+[Tue Sep 23 14:37:38.057655 2025] [:notice] [pid 21:tid 281472882503712] ModSecurity for Apache/2.9.5 (http://www.modsecurity.org/) configured.
+[Tue Sep 23 14:37:38.058486 2025] [:notice] [pid 21:tid 281472882503712] ModSecurity: APR compiled version="1.7.0"; loaded version="1.7.0"
+[Tue Sep 23 14:37:38.058512 2025] [:notice] [pid 21:tid 281472882503712] ModSecurity: PCRE compiled version="8.39 "; loaded version="8.39 2016-06-14"
+[Tue Sep 23 14:37:38.058532 2025] [:notice] [pid 21:tid 281472882503712] ModSecurity: LUA compiled version="Lua 5.1"
+[Tue Sep 23 14:37:38.058551 2025] [:notice] [pid 21:tid 281472882503712] ModSecurity: YAJL compiled version="2.1.0"
+[Tue Sep 23 14:37:38.058581 2025] [:notice] [pid 21:tid 281472882503712] ModSecurity: LIBXML compiled version="2.9.12"
+[Tue Sep 23 14:37:38.058622 2025] [:notice] [pid 21:tid 281472882503712] ModSecurity: Status engine is currently disabled, enable it by set SecStatusEngine to On.
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.20.1.10. Set the 'ServerName' directive globally to suppress this message
+[Tue Sep 23 14:37:38.099372 2025] [mpm_event:notice] [pid 21:tid 281472882503712] AH00489: Apache/2.4.52 (Ubuntu) OpenSSL/3.0.2 mod_wsgi/4.9.0 Python/3.10 configured -- resuming normal operations
+[Tue Sep 23 14:37:38.099557 2025] [core:notice] [pid 21:tid 281472882503712] AH00094: Command line: '/usr/sbin/apache2 -D FOREGROUND'
+[Tue Sep 23 14:42:21.075375 2025] [:notice] [pid 21:tid 281473262092320] ModSecurity for Apache/2.9.5 (http://www.modsecurity.org/) configured.
+[Tue Sep 23 14:42:21.075818 2025] [:notice] [pid 21:tid 281473262092320] ModSecurity: APR compiled version="1.7.0"; loaded version="1.7.0"
+[Tue Sep 23 14:42:21.075911 2025] [:notice] [pid 21:tid 281473262092320] ModSecurity: PCRE compiled version="8.39 "; loaded version="8.39 2016-06-14"
+[Tue Sep 23 14:42:21.075951 2025] [:notice] [pid 21:tid 281473262092320] ModSecurity: LUA compiled version="Lua 5.1"
+[Tue Sep 23 14:42:21.075986 2025] [:notice] [pid 21:tid 281473262092320] ModSecurity: YAJL compiled version="2.1.0"
+[Tue Sep 23 14:42:21.076074 2025] [:notice] [pid 21:tid 281473262092320] ModSecurity: LIBXML compiled version="2.9.12"
+[Tue Sep 23 14:42:21.076116 2025] [:notice] [pid 21:tid 281473262092320] ModSecurity: Status engine is currently disabled, enable it by set SecStatusEngine to On.
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.20.1.10. Set the 'ServerName' directive globally to suppress this message
+[Tue Sep 23 14:42:21.109018 2025] [mpm_event:notice] [pid 21:tid 281473262092320] AH00489: Apache/2.4.52 (Ubuntu) OpenSSL/3.0.2 mod_wsgi/4.9.0 Python/3.10 configured -- resuming normal operations
+[Tue Sep 23 14:42:21.109084 2025] [core:notice] [pid 21:tid 281473262092320] AH00094: Command line: '/usr/sbin/apache2 -D FOREGROUND'
+[Tue Sep 23 14:50:26.339433 2025] [:notice] [pid 21:tid 281473869676576] ModSecurity for Apache/2.9.5 (http://www.modsecurity.org/) configured.
+[Tue Sep 23 14:50:26.339803 2025] [:notice] [pid 21:tid 281473869676576] ModSecurity: APR compiled version="1.7.0"; loaded version="1.7.0"
+[Tue Sep 23 14:50:26.339840 2025] [:notice] [pid 21:tid 281473869676576] ModSecurity: PCRE compiled version="8.39 "; loaded version="8.39 2016-06-14"
+[Tue Sep 23 14:50:26.339873 2025] [:notice] [pid 21:tid 281473869676576] ModSecurity: LUA compiled version="Lua 5.1"
+[Tue Sep 23 14:50:26.339902 2025] [:notice] [pid 21:tid 281473869676576] ModSecurity: YAJL compiled version="2.1.0"
+[Tue Sep 23 14:50:26.339934 2025] [:notice] [pid 21:tid 281473869676576] ModSecurity: LIBXML compiled version="2.9.12"
+[Tue Sep 23 14:50:26.339964 2025] [:notice] [pid 21:tid 281473869676576] ModSecurity: Status engine is currently disabled, enable it by set SecStatusEngine to On.
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.20.1.10. Set the 'ServerName' directive globally to suppress this message
+[Tue Sep 23 14:50:26.396046 2025] [mpm_event:notice] [pid 21:tid 281473869676576] AH00489: Apache/2.4.52 (Ubuntu) OpenSSL/3.0.2 mod_wsgi/4.9.0 Python/3.10 configured -- resuming normal operations
+[Tue Sep 23 14:50:26.396284 2025] [core:notice] [pid 21:tid 281473869676576] AH00094: Command line: '/usr/sbin/apache2 -D FOREGROUND'

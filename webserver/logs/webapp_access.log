@@ -44,3 +44,6 @@
 172.20.1.2 - - [23/Sep/2025:10:51:11 +0000] "GET /favicon.ico HTTP/1.1" 404 751 "http://localhost:8070/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15"
 192.168.65.1 - - [23/Sep/2025:12:16:19 +0000] "GET / HTTP/1.1" 200 1354 "http://localhost/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:142.0) Gecko/20100101 Firefox/142.0"
 192.168.65.1 - - [23/Sep/2025:12:20:17 +0000] "GET / HTTP/1.1" 200 1354 "-" "Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Brave/1 Mobile/15E148 Safari/604.1"
+192.168.65.1 - - [23/Sep/2025:14:19:11 +0000] "GET / HTTP/1.1" 200 2514 "-" "curl/8.7.1"
+192.168.65.1 - - [23/Sep/2025:14:19:15 +0000] "GET / HTTP/1.1" 200 2514 "-" "curl/8.7.1"
+172.20.1.2 - - [23/Sep/2025:14:53:12 +0000] "GET / HTTP/1.1" 200 2514 "-" "curl/7.81.0"

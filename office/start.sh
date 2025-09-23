@@ -8,6 +8,16 @@ echo "================================"
 echo "📡 Starting SSH service..."
 service ssh start
 
+# Configure network routes to other subnets via router
+echo "🌐 Configuring network routes via router..."
+# Wait for router to be ready
+sleep 5
+# Add routes to other internal networks via router container
+ip route add 172.20.1.0/24 via 172.20.3.2  # DMZ via router
+ip route add 172.20.2.0/24 via 172.20.3.2  # Internal (DB) via router  
+ip route add 172.20.4.0/24 via 172.20.3.2  # Management via router
+echo "✅ Network routes configured"
+
 # Start XRDP voor remote desktop
 echo "🖥️  Starting XRDP service..."
 service xrdp start

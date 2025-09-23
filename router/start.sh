@@ -15,9 +15,9 @@ sysctl -w net.ipv6.conf.all.forwarding=1
 echo "Setting up WireGuard VPN..."
 /usr/local/bin/setup_wireguard.sh
 
-# Load firewall rules
-echo "Loading firewall configuration..."
-/usr/local/bin/configure_firewall.sh
+# Load SECURE firewall rules
+echo "Loading SECURE firewall configuration..."
+/usr/local/bin/secure_firewall.sh
 
 # Start WireGuard VPN
 echo "Starting WireGuard VPN server..."
@@ -29,9 +29,9 @@ service nginx start
 
 # Create status file
 echo "ROUTER_STATUS=ONLINE" > /var/log/iptables-router/status.log
-echo "FIREWALL_STATUS=DISABLED" >> /var/log/iptables-router/status.log
+echo "FIREWALL_STATUS=SECURE_ENABLED" >> /var/log/iptables-router/status.log
 echo "NAT_STATUS=ENABLED" >> /var/log/iptables-router/status.log
-echo "SECURITY_LEVEL=NONE" >> /var/log/iptables-router/status.log
+echo "SECURITY_LEVEL=HIGH" >> /var/log/iptables-router/status.log
 
 # Display network configuration
 echo ""
@@ -46,20 +46,28 @@ echo "   Office Network:     172.20.3.0/24 (Gateway: 172.20.3.1)"
 echo "   Management Network: 172.20.4.0/24 (Gateway: 172.20.4.1)"
 echo "   🔒 VPN Network:     10.0.100.0/24 (Server: 10.0.100.1)"
 echo ""
-echo "⚠️  Router Security Status:"
-echo "   🚨 iptables Firewall Rules: DISABLED"
-echo "   ❌ Network Segmentation: DISABLED"  
+echo "🛡️  Router Security Status:"
+echo "   ✅ iptables Firewall Rules: ENABLED (SECURE MODE)"
+echo "   ✅ Network Segmentation: ENABLED"  
+echo "   ✅ External Access: LIMITED to DMZ webserver only"
+echo "   ✅ Management Access: VPN only"
 echo "   ✅ Port Forwarding (DNAT/SNAT): ENABLED"
 echo "   ✅ NAT/Masquerading: ENABLED"
 echo "   🔒 WireGuard VPN Server: ENABLED"
-echo "   ⚠️  All Traffic: ALLOWED"
+echo "   🔒 Unauthorized Traffic: BLOCKED & LOGGED"
 echo ""
-echo "📱 VPN Access:"
+echo "🌐 Allowed External Access:"
+echo "   • HTTP (80) → DMZ Webserver (172.20.1.10)"
+echo "   • HTTPS (443) → DMZ Webserver (172.20.1.10)"
+echo "   • WireGuard VPN (51820/udp)"
+echo ""
+echo "📱 VPN Management Access:"
 echo "   • Generate client config: /usr/local/bin/generate_client.sh [name] [ip]"
 echo "   • VPN Port: 51820/udp"
-echo "   • VPN Network: 10.0.100.0/24"
+echo "   • VPN Network: 172.20.4.0/24"
+echo "   • Full network access from VPN clients"
 echo ""
-echo "🔓 WARNING: No firewall protection active!"
+echo "� SECURE: Firewall protection ACTIVE!"
 echo ""
 
 # Keep container running and monitor services

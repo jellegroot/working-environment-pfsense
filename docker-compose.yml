@@ -96,6 +96,8 @@ services:
       dockerfile: Dockerfile
     container_name: office-vm
     hostname: office
+    cap_add:
+      - NET_ADMIN
     ports:
       - "${OFFICE_RDP_PORT}:3389" # RDP
       - "${OFFICE_VNC_PORT}:5901" # VNC

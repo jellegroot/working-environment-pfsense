@@ -40,3 +40,38 @@ Engine-Mode: "ENABLED"
 
 --ecd02674-Z--
 
+--43e3f16d-A--
+[23/Sep/2025:14:53:12.357689 +0000] aNK0WJ_kRElm9VUk6iuYNgAAAAA 172.20.1.2 58306 172.20.1.10 80
+--43e3f16d-B--
+GET / HTTP/1.1
+Host: 172.20.1.10
+User-Agent: curl/7.81.0
+Accept: */*
+
+--43e3f16d-F--
+HTTP/1.1 200 OK
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;
+Content-Length: 2001
+Vary: Cookie,Accept-Encoding
+Content-Type: text/html; charset=utf-8
+
+--43e3f16d-E--
+
+--43e3f16d-H--
+Message: Warning. Pattern match "^[\\d.:]+$" at REQUEST_HEADERS:Host. [file "/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "735"] [id "920350"] [msg "Host header is a numeric IP address"] [data "172.20.1.10"] [severity "WARNING"] [ver "OWASP_CRS/3.3.2"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"]
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 172.20.1.2] ModSecurity: Warning. Pattern match "^[\\\\\\\\d.:]+$" at REQUEST_HEADERS:Host. [file "/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "735"] [id "920350"] [msg "Host header is a numeric IP address"] [data "172.20.1.10"] [severity "WARNING"] [ver "OWASP_CRS/3.3.2"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"] [hostname "172.20.1.10"] [uri "/"] [unique_id "aNK0WJ_kRElm9VUk6iuYNgAAAAA"]
+Apache-Handler: wsgi-script
+Stopwatch: 1758639192154948 203462 (- - -)
+Stopwatch2: 1758639192154948 203462; combined=7311, p1=4686, p2=2330, p3=35, p4=184, p5=76, sr=242, sw=0, l=0, gc=0
+Response-Body-Transformed: Dechunked
+Producer: ModSecurity for Apache/2.9.5 (http://www.modsecurity.org/); OWASP_CRS/3.3.2.
+Server: Apache
+Engine-Mode: "ENABLED"
+
+--43e3f16d-Z--
+
