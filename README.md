@@ -1,4 +1,18 @@
-# Week 1, 2 & 3: Secure Multi-VM Environment met Network Segmentatie
+# Week 1, 2 & 3: Secure Multi-VM Environment                     [External Network / Host]
+                             |
+                      🐧 [Router VM + WireGuard VPN]
+                  (Linux iptables Firewall + VPN Server)
+                     172.20.x.1 Gateways
+                    /     |     |     \       \
+                   /      |     |      \       \
+         [DMZ]    [Internal] [Office] [Mgmt] [VPN Clients]
+      172.20.1.0/24 172.20.2.0/24 172.20.3.0/24 172.20.4.0/24 10.0.100.0/24
+           |         |         |         |         |
+     [Webserver] [Database] [Office]  [Admin]  [Laptops/Mobile]
+     172.20.1.10 172.20.2.10 172.20.3.10          10.0.100.x
+     Apache2 +   MySQL 8.0   LibreOffice          WireGuard
+     ModSecurity Database     Suite + Tools       Remote Access
+     Flask App   SSH Access  RDP/VNC/SSH         Full Networkmentatie
 
 ## 🎯 Overzicht van het Project
 
@@ -64,7 +78,9 @@ Dit project implementeert een complete bedrijfsomgeving met webserver, database,
 - **DMZ Network (172.20.1.0/24):** Public-facing webserver met WAF beveiliging
 - **Internal Network (172.20.2.0/24):** Secure database backend, alleen toegankelijk via gecontroleerde routes
 - **Office Network (172.20.3.0/24):** User workspace met desktop tools, gecontroleerde toegang tot andere zones
-- **Router:** Controleert en logt alle traffic tussen zones, implementeert firewall rules
+- **Management Network (172.20.4.0/24):** Administrative access en management tools
+- **VPN Network (10.0.100.0/24):** WireGuard VPN voor remote access naar alle netwerken
+- **Router:** Controleert alle traffic tussen zones, WireGuard VPN server
 
 ### 🛡️ iptables Firewall Rules
 - DMZ → Internal: Alleen MySQL (poort 3306) met connection tracking
@@ -100,6 +116,7 @@ Dit project implementeert een complete bedrijfsomgeving met webserver, database,
 |---------|----------------|-------------|
 | **Website** | http://localhost | admin/password123, testuser/password123 |
 | **Router Dashboard** | http://localhost:8080 | Web interface (geen login vereist) |
+| **WireGuard VPN** | Port 51820/udp | Client config via web interface |
 | **Office RDP** | localhost:3389 | office/officepassword123 |
 | **Office VNC** | localhost:5901 | Via VNC client |
 | **MySQL Database** | localhost:3306 | webapp_user/secure_password123 |
@@ -119,3 +136,51 @@ Dit project implementeert een complete bedrijfsomgeving met webserver, database,
 ✅ **Week 3:** Linux iptables Router met geavanceerde network segmentatie en firewall beveiliging  
 
 **Alle requirements voor Weeks 1-3 zijn volledig geïmplementeerd en getest!**
+
+## 🔒 WireGuard VPN Setup
+
+### **VPN Client Genereren**
+
+1. **SSH naar router:**
+   ```bash
+   ssh routeradmin@localhost -p 2225
+   ```
+
+2. **Genereer client configuratie:**
+   ```bash
+   # Voor laptop
+   /usr/local/bin/generate_client.sh laptop 10.0.100.2
+   
+   # Voor telefoon  
+   /usr/local/bin/generate_client.sh phone 10.0.100.3
+   ```
+
+3. **Client configuratie ophalen:**
+   ```bash
+   # Bekijk configuratie
+   cat /etc/wireguard/clients/laptop.conf
+   
+   # Voor QR code (mobiel)
+   qrencode -t ansiutf8 < /etc/wireguard/clients/phone.conf
+   ```
+
+### **VPN Access**
+Met WireGuard VPN krijg je toegang tot:
+- ✅ **DMZ Network:** 172.20.1.0/24 (Webserver)
+- ✅ **Internal Network:** 172.20.2.0/24 (Database)  
+- ✅ **Office Network:** 172.20.3.0/24 (Office Tools)
+- ✅ **Management Network:** 172.20.4.0/24 (Admin)
+
+### **VPN Client Setup**
+
+**Windows/Mac/Linux:**
+1. Installeer WireGuard client
+2. Importeer `.conf` bestand
+3. Update `YOUR_SERVER_IP` naar je werkelijke IP
+4. Activeer VPN verbinding
+
+**Android/iOS:**
+1. Installeer WireGuard app
+2. Scan QR code of importeer configuratie
+3. Update server endpoint IP
+4. Activeer VPN verbinding

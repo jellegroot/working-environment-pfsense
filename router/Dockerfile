@@ -24,6 +24,9 @@ RUN apt-get update && apt-get install -y \
     wget \
     ufw \
     fail2ban \
+    wireguard \
+    wireguard-tools \
+    qrencode \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure SSH
@@ -44,6 +47,8 @@ RUN echo 'net.ipv6.conf.all.forwarding=1' >> /etc/sysctl.conf
 # Create router configuration directory
 RUN mkdir -p /etc/iptables-router/config
 RUN mkdir -p /var/log/iptables-router
+RUN mkdir -p /etc/wireguard
+RUN mkdir -p /etc/wireguard/clients
 
 # Copy router configuration files
 COPY config/ /etc/iptables-router/config/
@@ -63,7 +68,7 @@ COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 # Expose ports
-EXPOSE 22 80 443
+EXPOSE 22 80 443 51820/udp
 
 # Start router services
 CMD ["/start.sh"]

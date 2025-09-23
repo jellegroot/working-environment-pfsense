@@ -12,6 +12,7 @@ services:
     ports:
       - "${ROUTER_WEB_PORT}:80" # Router Web GUI
       - "${ROUTER_SSH_PORT}:22" # SSH (port forwarding)
+      - "${WIREGUARD_PORT}:51820/udp" # WireGuard VPN
     volumes:
       - router_config:/etc/iptables-router
       - router_ssh:/etc/ssh
@@ -24,6 +25,7 @@ services:
       - dmz_network
       - internal_network
       - office_network
+      - management_network
     restart: unless-stopped
 
   # Webserver VM met Apache2, ModSecurity en Flask (DMZ)
@@ -156,3 +158,11 @@ networks:
       config:
         - subnet: ${OFFICE_SUBNET}
           gateway: ${OFFICE_GATEWAY}
+
+  # Management Network - VPN and admin access
+  management_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${MANAGEMENT_SUBNET}
+          gateway: ${MANAGEMENT_GATEWAY}
