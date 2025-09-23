@@ -112,3 +112,13 @@ AH00558: apache2: Could not reliably determine the server's fully qualified doma
 AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.20.1.10. Set the 'ServerName' directive globally to suppress this message
 [Tue Sep 23 12:13:12.977002 2025] [mpm_event:notice] [pid 21:tid 281473660706848] AH00489: Apache/2.4.52 (Ubuntu) OpenSSL/3.0.2 mod_wsgi/4.9.0 Python/3.10 configured -- resuming normal operations
 [Tue Sep 23 12:13:12.978302 2025] [core:notice] [pid 21:tid 281473660706848] AH00094: Command line: '/usr/sbin/apache2 -D FOREGROUND'
+[Tue Sep 23 13:58:12.346615 2025] [:notice] [pid 21:tid 281473007812640] ModSecurity for Apache/2.9.5 (http://www.modsecurity.org/) configured.
+[Tue Sep 23 13:58:12.349083 2025] [:notice] [pid 21:tid 281473007812640] ModSecurity: APR compiled version="1.7.0"; loaded version="1.7.0"
+[Tue Sep 23 13:58:12.349134 2025] [:notice] [pid 21:tid 281473007812640] ModSecurity: PCRE compiled version="8.39 "; loaded version="8.39 2016-06-14"
+[Tue Sep 23 13:58:12.349166 2025] [:notice] [pid 21:tid 281473007812640] ModSecurity: LUA compiled version="Lua 5.1"
+[Tue Sep 23 13:58:12.349197 2025] [:notice] [pid 21:tid 281473007812640] ModSecurity: YAJL compiled version="2.1.0"
+[Tue Sep 23 13:58:12.349226 2025] [:notice] [pid 21:tid 281473007812640] ModSecurity: LIBXML compiled version="2.9.12"
+[Tue Sep 23 13:58:12.349255 2025] [:notice] [pid 21:tid 281473007812640] ModSecurity: Status engine is currently disabled, enable it by set SecStatusEngine to On.
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.20.1.10. Set the 'ServerName' directive globally to suppress this message
+[Tue Sep 23 13:58:12.385697 2025] [mpm_event:notice] [pid 21:tid 281473007812640] AH00489: Apache/2.4.52 (Ubuntu) OpenSSL/3.0.2 mod_wsgi/4.9.0 Python/3.10 configured -- resuming normal operations
+[Tue Sep 23 13:58:12.385756 2025] [core:notice] [pid 21:tid 281473007812640] AH00094: Command line: '/usr/sbin/apache2 -D FOREGROUND'
