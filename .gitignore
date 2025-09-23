@@ -1,0 +1,62 @@
+# Environment variables - NEVER commit these!
+.env.local
+.env.production
+.env.staging
+
+# Docker runtime files
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
+webserver/logs/*.log
+
+# Database data
+database/data/
+
+# Office documents and temporary files
+office/Documents/
+*.tmp
+*.temp
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# SSH keys
+*.key
+*.pem
+id_rsa*
+id_ecdsa*
+id_ed25519*
+
+# Backup files
+*.bak
+*.backup
+
+# Certificate files
+*.crt
+*.cert
+*.p12
+*.pfx
+
+# Testing files
+test_results/
+coverage/
