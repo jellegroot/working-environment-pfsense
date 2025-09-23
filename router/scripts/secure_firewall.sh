@@ -75,17 +75,17 @@ iptables -A INPUT -i eth0 -p tcp --dport 80 -j DROP
 
 # 8. BLOKKEREN: Extern rechtstreeks naar andere netwerken (alleen van buiten interne ranges)
 echo -e "${RED}  ❌ Blocking external access to internal networks${NC}"
-iptables -A FORWARD -s ! 172.20.0.0/16 -d ${INTERNAL_NET} -j LOG --log-prefix "EXTERN-DB-BLOCK: " --log-level 4
-iptables -A FORWARD -s ! 172.20.0.0/16 -d ${INTERNAL_NET} -j DROP
-iptables -A FORWARD -s ! 172.20.0.0/16 -d ${OFFICE_NET} -j LOG --log-prefix "EXTERN-OFFICE-BLOCK: " --log-level 4
-iptables -A FORWARD -s ! 172.20.0.0/16 -d ${OFFICE_NET} -j DROP
-iptables -A FORWARD -s ! 172.20.0.0/16 -d ${MGMT_NET} -j LOG --log-prefix "EXTERN-MGMT-BLOCK: " --log-level 4
-iptables -A FORWARD -s ! 172.20.0.0/16 -d ${MGMT_NET} -j DROP
+iptables -A FORWARD ! -s 172.20.0.0/16 -d ${INTERNAL_NET} -j LOG --log-prefix "EXTERN-DB-BLOCK: " --log-level 4
+iptables -A FORWARD ! -s 172.20.0.0/16 -d ${INTERNAL_NET} -j DROP
+iptables -A FORWARD ! -s 172.20.0.0/16 -d ${OFFICE_NET} -j LOG --log-prefix "EXTERN-OFFICE-BLOCK: " --log-level 4
+iptables -A FORWARD ! -s 172.20.0.0/16 -d ${OFFICE_NET} -j DROP
+iptables -A FORWARD ! -s 172.20.0.0/16 -d ${MGMT_NET} -j LOG --log-prefix "EXTERN-MGMT-BLOCK: " --log-level 4
+iptables -A FORWARD ! -s 172.20.0.0/16 -d ${MGMT_NET} -j DROP
 
-# 9. BLOKKEREN: Directe toegang tot andere DMZ hosts
+# 9. BLOKKEREN: Directe toegang tot andere DMZ hosts (webserver access already allowed above)
 echo -e "${RED}  ❌ Blocking external access to other DMZ hosts${NC}"
-iptables -A FORWARD -i eth0 -d ${DMZ_NET} ! -d ${WEBSERVER_IP} -j LOG --log-prefix "EXTERN-DMZ-BLOCK: " --log-level 4
-iptables -A FORWARD -i eth0 -d ${DMZ_NET} ! -d ${WEBSERVER_IP} -j DROP
+iptables -A FORWARD -i eth0 -d ${DMZ_NET} -j LOG --log-prefix "EXTERN-DMZ-NONWEB-BLOCK: " --log-level 4
+iptables -A FORWARD -i eth0 -d ${DMZ_NET} -j DROP
 
 # ===== MANAGEMENT TOEGANG - BEPERKT =====
 echo -e "\n${BLUE}🔑 Configuring restricted management access...${NC}"
@@ -120,11 +120,15 @@ iptables -A FORWARD -s ${MGMT_NET} -j DROP
 # ===== INTERNE NETWERK SEGMENTATIE =====
 echo -e "\n${BLUE}🏗️ Configuring internal network segmentation...${NC}"
 
-# 15. DMZ webserver mag alleen naar database
-echo -e "${GREEN}  ✅ DMZ webserver → Database (MySQL)${NC}"
-iptables -A FORWARD -s ${WEBSERVER_IP} -d ${DATABASE_IP} -p tcp --dport 3306 -j ACCEPT
+# 15. DMZ webserver heeft GEEN database toegang meer (nieuwe specificaties)
+echo -e "${RED}  ❌ DMZ webserver heeft geen database toegang${NC}"
+# iptables -A FORWARD -s ${WEBSERVER_IP} -d ${DATABASE_IP} -p tcp --dport 3306 -j ACCEPT  # UITGESCHAKELD
 
 # 16. Office netwerk toegang - BEPERKT volgens nieuwe specificaties
+# Office mag toegang tot extern gepubliceerde website (via externe route)
+echo -e "${GREEN}  ✅ Office → DMZ webserver (HTTP/HTTPS only)${NC}"
+iptables -A FORWARD -s ${OFFICE_NET} -d ${WEBSERVER_IP} -p tcp -m multiport --dports 80,443 -j ACCEPT
+# Office mag toegang tot database (lezen/schrijven)
 echo -e "${GREEN}  ✅ Office → Database (MySQL - lezen/schrijven)${NC}"
 iptables -A FORWARD -s ${OFFICE_NET} -d ${DATABASE_IP} -p tcp --dport 3306 -j ACCEPT
 
@@ -138,13 +142,70 @@ echo -e "${RED}  ❌ Blocking Office → Firewall access${NC}"
 iptables -A INPUT -s ${OFFICE_NET} -j LOG --log-prefix "OFFICE-FW-BLOCK: " --log-level 4
 iptables -A INPUT -s ${OFFICE_NET} -j DROP
 
+# ===== DATABASE SERVER RESTRICTIES =====
+echo -e "\n${BLUE}🗄️ Configuring Database Server restrictions...${NC}"
+
+# 19. BLOKKEREN: Database Server toegang tot DMZ
+echo -e "${RED}  ❌ Blocking Database → DMZ access${NC}"
+iptables -A FORWARD -s ${INTERNAL_NET} -d ${DMZ_NET} -j LOG --log-prefix "DB-DMZ-BLOCK: " --log-level 4
+iptables -A FORWARD -s ${INTERNAL_NET} -d ${DMZ_NET} -j DROP
+
+# 20. BLOKKEREN: Database Server toegang tot Office  
+echo -e "${RED}  ❌ Blocking Database → Office access${NC}"
+iptables -A FORWARD -s ${INTERNAL_NET} -d ${OFFICE_NET} -j LOG --log-prefix "DB-OFFICE-BLOCK: " --log-level 4
+iptables -A FORWARD -s ${INTERNAL_NET} -d ${OFFICE_NET} -j DROP
+
+# 21. BLOKKEREN: Database Server toegang tot Management
+echo -e "${RED}  ❌ Blocking Database → Management access${NC}"
+iptables -A FORWARD -s ${INTERNAL_NET} -d ${MGMT_NET} -j LOG --log-prefix "DB-MGMT-BLOCK: " --log-level 4
+iptables -A FORWARD -s ${INTERNAL_NET} -d ${MGMT_NET} -j DROP
+
+# 22. BLOKKEREN: Database Server toegang tot Firewall zelf
+echo -e "${RED}  ❌ Blocking Database → Firewall access${NC}"
+iptables -A INPUT -s ${INTERNAL_NET} -j LOG --log-prefix "DB-FW-BLOCK: " --log-level 4
+iptables -A INPUT -s ${INTERNAL_NET} -j DROP
+
+# 23. BLOKKEREN: Database Server toegang tot internet
+echo -e "${RED}  ❌ Blocking Database → Internet access${NC}"
+iptables -A FORWARD -s ${INTERNAL_NET} -o eth0 -j LOG --log-prefix "DB-INTERNET-BLOCK: " --log-level 4
+iptables -A FORWARD -s ${INTERNAL_NET} -o eth0 -j DROP
+
+# ===== DMZ WEBSERVER RESTRICTIES =====
+echo -e "\n${BLUE}🌐 Configuring DMZ webserver restrictions...${NC}"
+
+# 24. BLOKKEREN: DMZ toegang tot Database (al geblokkeerd door DB restricties boven)
+# Extra regel voor duidelijkheid
+echo -e "${RED}  ❌ Blocking DMZ → Database access${NC}"
+iptables -A FORWARD -s ${DMZ_NET} -d ${INTERNAL_NET} -j LOG --log-prefix "DMZ-DB-BLOCK: " --log-level 4
+iptables -A FORWARD -s ${DMZ_NET} -d ${INTERNAL_NET} -j DROP
+
+# 25. BLOKKEREN: DMZ toegang tot Office
+echo -e "${RED}  ❌ Blocking DMZ → Office access${NC}"
+iptables -A FORWARD -s ${DMZ_NET} -d ${OFFICE_NET} -j LOG --log-prefix "DMZ-OFFICE-BLOCK: " --log-level 4
+iptables -A FORWARD -s ${DMZ_NET} -d ${OFFICE_NET} -j DROP
+
+# 26. BLOKKEREN: DMZ toegang tot Management
+echo -e "${RED}  ❌ Blocking DMZ → Management access${NC}"
+iptables -A FORWARD -s ${DMZ_NET} -d ${MGMT_NET} -j LOG --log-prefix "DMZ-MGMT-BLOCK: " --log-level 4
+iptables -A FORWARD -s ${DMZ_NET} -d ${MGMT_NET} -j DROP
+
+# 27. BLOKKEREN: DMZ toegang tot Firewall zelf
+echo -e "${RED}  ❌ Blocking DMZ → Firewall access${NC}"
+iptables -A INPUT -s ${DMZ_NET} -j LOG --log-prefix "DMZ-FW-BLOCK: " --log-level 4
+iptables -A INPUT -s ${DMZ_NET} -j DROP
+
+# 28. BLOKKEREN: DMZ toegang tot internet
+echo -e "${RED}  ❌ Blocking DMZ → Internet access${NC}"
+iptables -A FORWARD -s ${DMZ_NET} -o eth0 -j LOG --log-prefix "DMZ-INTERNET-BLOCK: " --log-level 4
+iptables -A FORWARD -s ${DMZ_NET} -o eth0 -j DROP
+
 # ===== UITGAAND VERKEER =====
 echo -e "\n${BLUE}🌍 Configuring outbound traffic...${NC}"
 
-# 15. DMZ en Internal netwerken mogen naar extern
-echo -e "${GREEN}  ✅ Allowing outbound traffic from DMZ, Internal networks${NC}"
-iptables -A FORWARD -s ${DMZ_NET} -o eth0 -j ACCEPT
-iptables -A FORWARD -s ${INTERNAL_NET} -o eth0 -j ACCEPT
+# 15. DMZ en Database Server hebben GEEN internet toegang (nieuwe specificaties)
+echo -e "${RED}  ❌ DMZ and Database Server have NO internet access${NC}"
+# iptables -A FORWARD -s ${DMZ_NET} -o eth0 -j ACCEPT  # UITGESCHAKELD
+# iptables -A FORWARD -s ${INTERNAL_NET} -o eth0 -j ACCEPT  # UITGESCHAKELD
 
 # 16. Office netwerk beperkte externe toegang (internet + extern gepubliceerde website)
 echo -e "${GREEN}  ✅ Limited outbound access for Office (HTTP(S), DNS, SSH only)${NC}"
@@ -200,6 +261,7 @@ echo -e "  • HTTPS (443) → ${WEBSERVER_IP}:443"
 echo -e "  • WireGuard VPN (51820/udp)"
 
 echo -e "\n${GREEN}🏢 Office Network Access:${NC}"
+echo -e "  • DMZ webserver access (HTTP/HTTPS to ${WEBSERVER_IP})"
 echo -e "  • Database access (MySQL port 3306)"
 echo -e "  • Internet access via external website route"
 echo -e "  • Limited outbound (HTTP(S), DNS, SSH only)"
@@ -212,10 +274,16 @@ echo -e "  • Direct access to management network"
 echo -e "  • Direct access to other DMZ hosts"
 
 echo -e "\n${RED}🚫 Office Network Restrictions:${NC}"
-echo -e "  • No direct access to DMZ webserver"
 echo -e "  • No access to firewall management"
 echo -e "  • No access to database server directly"
 echo -e "  • Limited outbound ports (HTTP(S), DNS, SSH only)"
+
+echo -e "\n${RED}🚫 DMZ Webserver Restrictions:${NC}"
+echo -e "  • No access to database server"
+echo -e "  • No access to office network"
+echo -e "  • No access to management network"
+echo -e "  • No access to firewall management"
+echo -e "  • No internet access (HTTP/HTTPS/SSH blocked)"
 
 echo -e "\n${BLUE}🔑 Management Access (RESTRICTED):${NC}"
 echo -e "  • SSH access only via WireGuard VPN (${MGMT_NET})"
