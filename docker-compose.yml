@@ -1,0 +1,158 @@
+version: '3.8'
+
+services:
+  # pfSense Router VM
+  router:
+    build:
+      context: ./router
+      dockerfile: Dockerfile
+    container_name: router-vm
+    hostname: router
+    privileged: true
+    ports:
+      - "${ROUTER_WEB_PORT}:80" # pfSense Web GUI
+      - "${ROUTER_SSH_PORT}:22" # SSH (port forwarding)
+    volumes:
+      - router_config:/etc/pfsense
+      - router_ssh:/etc/ssh
+    environment:
+      - PFSENSE_ADMIN_USER=${PFSENSE_ADMIN_USER}
+      - PFSENSE_ADMIN_PASSWORD=${PFSENSE_ADMIN_PASSWORD}
+      - SSH_ROOT_PASSWORD=${SSH_ROOT_PASSWORD}
+      - TZ=${TZ}
+    networks:
+      - dmz_network
+      - internal_network
+      - office_network
+    restart: unless-stopped
+
+  # Webserver VM met Apache2, ModSecurity en Flask (DMZ)
+  webserver:
+    build:
+      context: ./webserver
+      dockerfile: Dockerfile
+    container_name: webserver-vm
+    hostname: webserver
+    ports:
+      - "${WEBSERVER_HTTP_PORT}:80" # HTTP
+      - "${WEBSERVER_HTTPS_PORT}:443" # HTTPS
+      - "${WEBSERVER_SSH_PORT}:22" # SSH (port forwarding)
+    volumes:
+      - ./website:/var/www/webapp
+      - ./webserver/config:/etc/apache2/sites-available
+      - ./webserver/logs:/var/log/apache2
+      - webserver_ssh:/etc/ssh
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - FLASK_ENV=${FLASK_ENV}
+      - FLASK_DEBUG=${FLASK_DEBUG}
+      - TZ=${TZ}
+    depends_on:
+      - database
+      - router
+    networks:
+      dmz_network:
+        ipv4_address: ${WEBSERVER_IP}
+    restart: unless-stopped
+
+  # Database Server VM met MySQL (Internal Network)
+  database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: database-vm
+    hostname: database
+    ports:
+      - "${DATABASE_PORT}:3306" # MySQL
+      - "${DATABASE_SSH_PORT}:22" # SSH (port forwarding)
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+      - ./database/config:/etc/mysql/conf.d
+      - database_ssh:/etc/ssh
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - TZ=${TZ}
+    depends_on:
+      - router
+    networks:
+      internal_network:
+        ipv4_address: ${DATABASE_IP}
+    restart: unless-stopped
+
+  # Office Server VM met LibreOffice (Office Network)
+  office:
+    build:
+      context: ./office
+      dockerfile: Dockerfile
+    container_name: office-vm
+    hostname: office
+    ports:
+      - "${OFFICE_RDP_PORT}:3389" # RDP
+      - "${OFFICE_VNC_PORT}:5901" # VNC
+      - "${OFFICE_SSH_PORT}:22" # SSH (port forwarding)
+    volumes:
+      - office_data:/home/office/Documents
+      - office_ssh:/etc/ssh
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - WEB_HOST=webserver
+      - OFFICE_USER=${OFFICE_USER}
+      - OFFICE_PASSWORD=${OFFICE_PASSWORD}
+      - VNC_PASSWORD=${VNC_PASSWORD}
+      - RDP_USER=${RDP_USER}
+      - RDP_PASSWORD=${RDP_PASSWORD}
+      - TZ=${TZ}
+    depends_on:
+      - database
+      - webserver
+      - router
+    networks:
+      office_network:
+        ipv4_address: ${OFFICE_IP}
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  webserver_ssh:
+  database_ssh:
+  office_data:
+  office_ssh:
+  router_config:
+  router_ssh:
+
+
+networks:
+  # DMZ Network - Webserver (Public facing)
+  dmz_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${DMZ_SUBNET}
+          gateway: ${DMZ_GATEWAY}
+
+  # Internal Network - Database (Secure backend)
+  internal_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INTERNAL_SUBNET}
+          gateway: ${INTERNAL_GATEWAY}
+
+  # Office Network - Office tools (User workspace)
+  office_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${OFFICE_SUBNET}
+          gateway: ${OFFICE_GATEWAY}

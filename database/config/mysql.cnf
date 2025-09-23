@@ -1,0 +1,19 @@
+[mysqld]
+# Network configuration - MUST bind to all interfaces for Docker
+bind-address = 0.0.0.0
+port = 3306
+skip-networking = 0
+
+# Security instellingen
+sql_mode = STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO
+
+# Performance instellingen
+max_connections = 100
+innodb_buffer_pool_size = 256M
+
+# Character set
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+[client]
+default-character-set = utf8mb4

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Week 1 Project{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="security-info">
+            <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+            <p class="mb-0">Welkom, {{ session.username }}!</p>
+        </div>
+
+        {% if user_info %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-user"></i> Gebruikersinformatie</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Gebruikersnaam:</strong></td>
+                                <td>{{ user_info.username }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td>{{ user_info.email or 'Niet ingesteld' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Account aangemaakt:</strong></td>
+                                <td>{{ user_info.created_at.strftime('%d-%m-%Y %H:%M') if user_info.created_at else 'Onbekend' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Laatste login:</strong></td>
+                                <td>{{ user_info.last_login.strftime('%d-%m-%Y %H:%M') if user_info.last_login else 'Eerste keer' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-history"></i> Recente Login Activiteit</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_logins %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Tijd</th>
+                                            <th>IP Adres</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for login in recent_logins %}
+                                        <tr>
+                                            <td>{{ login.login_time.strftime('%d-%m %H:%M') }}</td>
+                                            <td>{{ login.ip_address }}</td>
+                                            <td>
+                                                {% if login.success %}
+                                                    <span class="badge bg-success">Succesvol</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">Mislukt</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">Geen recente login activiteit gevonden.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                        <h5>ModSecurity WAF</h5>
+                        <p class="text-muted">Web Application Firewall actief en beschermt tegen aanvallen</p>
+                        <span class="badge bg-success">Actief</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-database fa-3x text-info mb-3"></i>
+                        <h5>Database Verbinding</h5>
+                        <p class="text-muted">Verbonden met MySQL database server</p>
+                        <span class="badge bg-success">Verbonden</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-lock fa-3x text-warning mb-3"></i>
+                        <h5>SSH Toegang</h5>
+                        <p class="text-muted">Beveiligde shell toegang voor beheerders</p>
+                        <span class="badge bg-success">Beschikbaar</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if session.username == 'admin' %}
+        <div class="mt-4">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-crown"></i> Administrator Functies</h5>
+                </div>
+                <div class="card-body">
+                    <p>Als administrator heb je toegang tot extra functies:</p>
+                    <a href="{{ url_for('users') }}" class="btn btn-warning">
+                        <i class="fas fa-users"></i> Gebruikers Beheren
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-terminal"></i> Systeem Toegang</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Webserver SSH:</h6>
+                            <code>ssh admin@localhost -p 2222</code><br>
+                            <small class="text-muted">Wachtwoord: adminpassword123</small>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Database SSH:</h6>
+                            <code>ssh dbadmin@localhost -p 2223</code><br>
+                            <small class="text-muted">Wachtwoord: dbadminpassword123</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1 @@
+[Wed Sep 03 07:35:08.695053 2025] [wsgi:error] [pid 22:tid 281472846065856] [remote 192.168.65.1:30507] Database connection error: 2003 (HY000): Can't connect to MySQL server on 'database:3306' (111)
