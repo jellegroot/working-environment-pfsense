@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # pfSense Router VM
+  # Linux iptables Router VM
   router:
     build:
       context: ./router
@@ -10,14 +10,14 @@ services:
     hostname: router
     privileged: true
     ports:
-      - "${ROUTER_WEB_PORT}:80" # pfSense Web GUI
+      - "${ROUTER_WEB_PORT}:80" # Router Web GUI
       - "${ROUTER_SSH_PORT}:22" # SSH (port forwarding)
     volumes:
-      - router_config:/etc/pfsense
+      - router_config:/etc/iptables-router
       - router_ssh:/etc/ssh
     environment:
-      - PFSENSE_ADMIN_USER=${PFSENSE_ADMIN_USER}
-      - PFSENSE_ADMIN_PASSWORD=${PFSENSE_ADMIN_PASSWORD}
+      - ROUTER_ADMIN_USER=${ROUTER_ADMIN_USER}
+      - ROUTER_ADMIN_PASSWORD=${ROUTER_ADMIN_PASSWORD}
       - SSH_ROOT_PASSWORD=${SSH_ROOT_PASSWORD}
       - TZ=${TZ}
     networks:

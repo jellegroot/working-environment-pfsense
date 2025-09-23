@@ -1,78 +1,76 @@
 #!/bin/bash
-# Router Firewall Rules Configuration Script
+# Linux iptables Firewall Rules Configuration Script
 
-echo "Configuring pfSense-like firewall rules..."
+echo "Configuring advanced iptables firewall rules..."
 
 # Enable IP forwarding
 sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.forwarding=1
 
-# Clear existing rules
+# Clear existing rules - NO RESTRICTIONS MODE
 iptables -F
 iptables -X
 iptables -t nat -F
 iptables -t nat -X
 
-# Set default policies
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
+# Set default policies to ACCEPT ALL
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 
-# Allow loopback
-iptables -A INPUT -i lo -j ACCEPT
-iptables -A OUTPUT -o lo -j ACCEPT
+# NO FIREWALL RULES - ALLOW ALL TRAFFIC
+# All traffic is allowed by default ACCEPT policies above
+echo "⚠️  WARNING: Firewall disabled - All traffic allowed!"
 
-# Allow established connections
-iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+# NO NETWORK SEGMENTATION - ALL TRAFFIC ALLOWED
 
-# Allow SSH access to router
-iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+# NO LOGGING OR DROPPING - ALL PACKETS ACCEPTED
 
-# Allow HTTP access to router web interface
-iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+# Advanced NAT Rules for port forwarding
+# Web services (HTTP/HTTPS)
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to-destination 172.20.1.10:80
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j DNAT --to-destination 172.20.1.10:443
 
-# DMZ Network Rules (172.20.1.0/24)
-# Allow HTTP/HTTPS to webserver from anywhere
-iptables -A FORWARD -p tcp --dport 80 -d 172.20.1.10 -j ACCEPT
-iptables -A FORWARD -p tcp --dport 443 -d 172.20.1.10 -j ACCEPT
+# SSH port forwarding
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 2222 -j DNAT --to-destination 172.20.1.10:22
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 2223 -j DNAT --to-destination 172.20.2.10:22
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 2224 -j DNAT --to-destination 172.20.3.10:22
 
-# Allow webserver to access database
-iptables -A FORWARD -s 172.20.1.10 -d 172.20.2.10 -p tcp --dport 3306 -j ACCEPT
+# Database access (restricted)
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 3306 -s 172.20.3.0/24 -j DNAT --to-destination 172.20.2.10:3306
 
-# Office Network Rules (172.20.3.0/24)
-# Allow office to access webserver
-iptables -A FORWARD -s 172.20.3.0/24 -d 172.20.1.10 -p tcp --dport 80 -j ACCEPT
-iptables -A FORWARD -s 172.20.3.0/24 -d 172.20.1.10 -p tcp --dport 443 -j ACCEPT
+# Office services (RDP, VNC)
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 3389 -j DNAT --to-destination 172.20.3.10:3389
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 5901 -j DNAT --to-destination 172.20.3.10:5901
 
-# Allow office to access database
-iptables -A FORWARD -s 172.20.3.0/24 -d 172.20.2.10 -p tcp --dport 3306 -j ACCEPT
+# Source NAT for outbound traffic
+iptables -t nat -A POSTROUTING -s 172.20.1.0/24 -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 172.20.2.0/24 -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 172.20.3.0/24 -o eth0 -j MASQUERADE
 
-# SSH access rules
-iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
+# Save iptables rules for persistence
+iptables-save > /etc/iptables/rules.v4
+ip6tables-save > /etc/iptables/rules.v6
 
-# Log dropped packets
-iptables -A FORWARD -j LOG --log-prefix "ROUTER-DROP: "
-iptables -A INPUT -j LOG --log-prefix "ROUTER-INPUT-DROP: "
-
-# NAT Rules for port forwarding
-iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 172.20.1.10:80
-iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 172.20.1.10:443
-iptables -t nat -A PREROUTING -p tcp --dport 2222 -j DNAT --to-destination 172.20.1.10:22
-iptables -t nat -A PREROUTING -p tcp --dport 2223 -j DNAT --to-destination 172.20.2.10:22
-iptables -t nat -A PREROUTING -p tcp --dport 2224 -j DNAT --to-destination 172.20.3.10:22
-iptables -t nat -A PREROUTING -p tcp --dport 3306 -j DNAT --to-destination 172.20.2.10:3306
-
-# Masquerade for outbound traffic
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-
-echo "Firewall rules configured successfully"
-echo "Network segments:"
-echo "  DMZ (Webserver):     172.20.1.0/24"
-echo "  Internal (Database): 172.20.2.0/24" 
-echo "  Office (Tools):      172.20.3.0/24"
-
-# Display current rules
+echo "⚠️  FIREWALL DISABLED - All traffic allowed!"
 echo ""
-echo "=== Current Firewall Rules ==="
-iptables -L -n --line-numbers
+echo "🌐 Network Segments (No restrictions):"
+echo "  📍 DMZ (Webserver):     172.20.1.0/24 (Gateway: 172.20.1.1)"
+echo "  🔒 Internal (Database): 172.20.2.0/24 (Gateway: 172.20.2.1)" 
+echo "  🏢 Office (Tools):      172.20.3.0/24 (Gateway: 172.20.3.1)"
+echo ""
+echo "� Security Status:"
+echo "  ❌ Firewall Rules: DISABLED"
+echo "  ❌ Network Segmentation: DISABLED"
+echo "  ❌ Access Control: DISABLED"
+echo "  ✅ Port Forwarding: ENABLED"
+echo "  ✅ NAT/Masquerading: ENABLED"
+echo ""
+
+# Display current rules summary
+echo "=== iptables Status ==="
+echo "📊 Filter Table Policies:"
+iptables -L -n | head -10
+echo ""
+echo "📊 NAT Table:"
+iptables -t nat -L -n | grep -E "(Chain|target|DNAT|MASQ)"

@@ -30,12 +30,13 @@ Dit project implementeert een complete bedrijfsomgeving met webserver, database,
 - SSH toegang voor beheer (poort 2224)
 
 ### Week 3: Router (VM4) + Network Segmentatie
-✅ **Router VM:**
+✅ **Linux iptables Router VM:**
 - Ubuntu 22.04 Linux VM (Docker container)
-- pfSense-like router functionaliteit
+- Linux iptables firewall functionaliteit  
 - Network segmentatie in 3 subnets
-- iptables firewall rules voor security
-- NAT en port forwarding configuratie
+- Geavanceerde iptables rules voor security
+- NAT/DNAT/SNAT en port forwarding configuratie
+- Connection tracking en anti-spoofing
 - Router web interface (poort 8080)
 - SSH toegang voor beheer (poort 2225)
 
@@ -44,8 +45,8 @@ Dit project implementeert een complete bedrijfsomgeving met webserver, database,
 ```
                     [External Network / Host]
                              |
-                      🛡️ [Router VM]
-                  (pfSense-like Firewall)
+                      � [Router VM]
+                  (Linux iptables Firewall)
                      172.20.x.1 Gateways
                     /        |        \
                    /         |         \
@@ -65,12 +66,14 @@ Dit project implementeert een complete bedrijfsomgeving met webserver, database,
 - **Office Network (172.20.3.0/24):** User workspace met desktop tools, gecontroleerde toegang tot andere zones
 - **Router:** Controleert en logt alle traffic tussen zones, implementeert firewall rules
 
-### 🛡️ Firewall Rules
-- DMZ → Internal: Alleen MySQL (poort 3306) toegestaan
+### 🛡️ iptables Firewall Rules
+- DMZ → Internal: Alleen MySQL (poort 3306) met connection tracking
 - Office → DMZ: HTTP/HTTPS (poorten 80/443) toegestaan
 - Office → Internal: MySQL (poort 3306) toegestaan  
-- SSH: Toegestaan naar alle netwerken voor beheer
-- Default: Alle andere traffic wordt geblokkeerd en gelogd
+- SSH: Rate-limited toegang naar alle netwerken voor beheer
+- Anti-spoofing: Bescherming tegen IP spoofing aanvallen
+- Port scan protection: Detectie en blokkering van port scans
+- Default: DROP policy, alle ongewenste traffic wordt geblokkeerd en gelogd
 ## 🚀 Quick Start
 
 1. **Start alle services:**
@@ -113,6 +116,6 @@ Dit project implementeert een complete bedrijfsomgeving met webserver, database,
 
 ✅ **Week 1:** Webserver + Database met security (ModSecurity WAF)  
 ✅ **Week 2:** Office werkomgeving met database en website toegang  
-✅ **Week 3:** Router met network segmentatie en firewall beveiliging  
+✅ **Week 3:** Linux iptables Router met geavanceerde network segmentatie en firewall beveiliging  
 
 **Alle requirements voor Weeks 1-3 zijn volledig geïmplementeerd en getest!**

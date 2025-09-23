@@ -1,4 +1,4 @@
-# pfSense Router VM voor netwerk segmentatie
+# Linux iptables Router VM voor netwerk segmentatie en firewall
 FROM ubuntu:22.04
 
 # Set environment to avoid interactive prompts
@@ -7,6 +7,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install networking tools and services
 RUN apt-get update && apt-get install -y \
     iptables \
+    iptables-persistent \
+    netfilter-persistent \
     iproute2 \
     iputils-ping \
     net-tools \
@@ -20,6 +22,8 @@ RUN apt-get update && apt-get install -y \
     dnsutils \
     curl \
     wget \
+    ufw \
+    fail2ban \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure SSH
@@ -38,11 +42,11 @@ RUN echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
 RUN echo 'net.ipv6.conf.all.forwarding=1' >> /etc/sysctl.conf
 
 # Create router configuration directory
-RUN mkdir -p /etc/pfsense/config
-RUN mkdir -p /var/log/pfsense
+RUN mkdir -p /etc/iptables-router/config
+RUN mkdir -p /var/log/iptables-router
 
 # Copy router configuration files
-COPY config/ /etc/pfsense/config/
+COPY config/ /etc/iptables-router/config/
 COPY scripts/ /usr/local/bin/
 
 # Make scripts executable

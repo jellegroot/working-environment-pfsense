@@ -1,7 +1,7 @@
 #!/bin/bash
-# Router Startup Script - pfSense-like functionality
+# Linux iptables Router Startup Script
 
-echo "Starting pfSense Router..."
+echo "Starting Linux iptables Router..."
 
 # Start SSH service
 service ssh start
@@ -20,13 +20,14 @@ echo "Starting router web interface..."
 service nginx start
 
 # Create status file
-echo "ROUTER_STATUS=ONLINE" > /var/log/pfsense/status.log
-echo "FIREWALL_STATUS=ACTIVE" >> /var/log/pfsense/status.log
-echo "NAT_STATUS=ENABLED" >> /var/log/pfsense/status.log
+echo "ROUTER_STATUS=ONLINE" > /var/log/iptables-router/status.log
+echo "FIREWALL_STATUS=DISABLED" >> /var/log/iptables-router/status.log
+echo "NAT_STATUS=ENABLED" >> /var/log/iptables-router/status.log
+echo "SECURITY_LEVEL=NONE" >> /var/log/iptables-router/status.log
 
 # Display network configuration
 echo ""
-echo "=== pfSense Router Started ==="
+echo "=== Linux iptables Router Started ==="
 echo "🌐 Web Interface: http://localhost:8080"
 echo "🔒 SSH Access: ssh routeradmin@localhost -p 2225"
 echo ""
@@ -35,11 +36,14 @@ echo "   DMZ Network:      172.20.1.0/24 (Gateway: 172.20.1.1)"
 echo "   Internal Network: 172.20.2.0/24 (Gateway: 172.20.2.1)"
 echo "   Office Network:   172.20.3.0/24 (Gateway: 172.20.3.1)"
 echo ""
-echo "🛡️ Security Features:"
-echo "   ✓ Firewall Rules Active"
-echo "   ✓ Network Segmentation"
-echo "   ✓ Port Forwarding"
-echo "   ✓ NAT/Masquerading"
+echo "⚠️  Router Security Status:"
+echo "   🚨 iptables Firewall Rules: DISABLED"
+echo "   ❌ Network Segmentation: DISABLED"  
+echo "   ✅ Port Forwarding (DNAT/SNAT): ENABLED"
+echo "   ✅ NAT/Masquerading: ENABLED"
+echo "   ⚠️  All Traffic: ALLOWED"
+echo ""
+echo "🔓 WARNING: No firewall protection active!"
 echo ""
 
 # Keep container running and monitor services
