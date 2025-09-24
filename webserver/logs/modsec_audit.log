@@ -145,3 +145,73 @@ Engine-Mode: "ENABLED"
 
 --ee25dc52-Z--
 
+--532a8546-A--
+[23/Sep/2025:15:55:52.493431 +0000] aNLDCNTUY8I9b_S4m04tTQAAAAA 172.20.1.2 53268 172.20.1.10 80
+--532a8546-B--
+GET / HTTP/1.1
+Host: 172.20.1.10
+User-Agent: curl/7.81.0
+Accept: */*
+
+--532a8546-F--
+HTTP/1.1 200 OK
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;
+Content-Length: 2001
+Vary: Cookie,Accept-Encoding
+Content-Type: text/html; charset=utf-8
+
+--532a8546-E--
+
+--532a8546-H--
+Message: Warning. Pattern match "^[\\d.:]+$" at REQUEST_HEADERS:Host. [file "/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "735"] [id "920350"] [msg "Host header is a numeric IP address"] [data "172.20.1.10"] [severity "WARNING"] [ver "OWASP_CRS/3.3.2"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"]
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 172.20.1.2] ModSecurity: Warning. Pattern match "^[\\\\\\\\d.:]+$" at REQUEST_HEADERS:Host. [file "/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "735"] [id "920350"] [msg "Host header is a numeric IP address"] [data "172.20.1.10"] [severity "WARNING"] [ver "OWASP_CRS/3.3.2"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"] [hostname "172.20.1.10"] [uri "/"] [unique_id "aNLDCNTUY8I9b_S4m04tTQAAAAA"]
+Apache-Handler: wsgi-script
+Stopwatch: 1758642952468021 29559 (- - -)
+Stopwatch2: 1758642952468021 29559; combined=6246, p1=4083, p2=1823, p3=35, p4=225, p5=79, sr=644, sw=1, l=0, gc=0
+Response-Body-Transformed: Dechunked
+Producer: ModSecurity for Apache/2.9.5 (http://www.modsecurity.org/); OWASP_CRS/3.3.2.
+Server: Apache
+Engine-Mode: "ENABLED"
+
+--532a8546-Z--
+
+--ee25dc52-A--
+[23/Sep/2025:15:56:21.539277 +0000] aNLDJdTUY8I9b_S4m04tTgAAAAI 172.20.3.10 33412 172.20.1.10 80
+--ee25dc52-B--
+GET / HTTP/1.1
+Host: 172.20.1.10
+User-Agent: curl/7.81.0
+Accept: */*
+
+--ee25dc52-F--
+HTTP/1.1 200 OK
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;
+Content-Length: 2001
+Vary: Cookie,Accept-Encoding
+Content-Type: text/html; charset=utf-8
+
+--ee25dc52-E--
+
+--ee25dc52-H--
+Message: Warning. Pattern match "^[\\d.:]+$" at REQUEST_HEADERS:Host. [file "/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "735"] [id "920350"] [msg "Host header is a numeric IP address"] [data "172.20.1.10"] [severity "WARNING"] [ver "OWASP_CRS/3.3.2"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"]
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 172.20.3.10] ModSecurity: Warning. Pattern match "^[\\\\\\\\d.:]+$" at REQUEST_HEADERS:Host. [file "/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "735"] [id "920350"] [msg "Host header is a numeric IP address"] [data "172.20.1.10"] [severity "WARNING"] [ver "OWASP_CRS/3.3.2"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"] [hostname "172.20.1.10"] [uri "/"] [unique_id "aNLDJdTUY8I9b_S4m04tTgAAAAI"]
+Apache-Handler: wsgi-script
+Stopwatch: 1758642981536194 5751 (- - -)
+Stopwatch2: 1758642981536194 5751; combined=1004, p1=294, p2=567, p3=28, p4=60, p5=55, sr=52, sw=0, l=0, gc=0
+Response-Body-Transformed: Dechunked
+Producer: ModSecurity for Apache/2.9.5 (http://www.modsecurity.org/); OWASP_CRS/3.3.2.
+Server: Apache
+Engine-Mode: "ENABLED"
+
+--ee25dc52-Z--
+
