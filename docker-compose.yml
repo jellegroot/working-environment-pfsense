@@ -12,7 +12,6 @@ services:
     ports:
       - "${ROUTER_WEB_PORT}:80" # Router Web GUI
       - "${ROUTER_SSH_PORT}:22" # SSH (port forwarding)
-      - "${WIREGUARD_PORT}:51820/udp" # WireGuard VPN
     volumes:
       - router_config:/etc/iptables-router
       - router_ssh:/etc/ssh
@@ -126,6 +125,42 @@ services:
         ipv4_address: ${OFFICE_IP}
     restart: unless-stopped
 
+  # Management VM voor admin taken (Management Network)
+  management:
+    image: ubuntu:22.04
+    container_name: management-vm
+    hostname: management
+    ports:
+      - "${MANAGEMENT_SSH_PORT}:22" # SSH (port forwarding)
+    volumes:
+      - management_ssh:/etc/ssh
+      - management_data:/home/admin
+    environment:
+      - MANAGEMENT_USER=${MANAGEMENT_USER}
+      - MANAGEMENT_PASSWORD=${MANAGEMENT_PASSWORD}
+      - SSH_ROOT_PASSWORD=${SSH_ROOT_PASSWORD}
+      - TZ=${TZ}
+    command: >
+      bash -c "
+        apt-get update &&
+        apt-get install -y openssh-server sudo curl wget net-tools iputils-ping nano vim htop &&
+        mkdir -p /var/run/sshd &&
+        echo 'root:${SSH_ROOT_PASSWORD}' | chpasswd &&
+        useradd -m -s /bin/bash admin &&
+        echo 'admin:${MANAGEMENT_PASSWORD}' | chpasswd &&
+        usermod -aG sudo admin &&
+        sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config &&
+        sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config &&
+        service ssh start &&
+        tail -f /dev/null
+      "
+    depends_on:
+      - router
+    networks:
+      management_network:
+        ipv4_address: ${MANAGEMENT_IP}
+    restart: unless-stopped
+
 volumes:
   db_data:
   webserver_ssh:
@@ -134,6 +169,8 @@ volumes:
   office_ssh:
   router_config:
   router_ssh:
+  management_ssh:
+  management_data:
 
 
 networks:

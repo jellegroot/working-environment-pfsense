@@ -24,8 +24,6 @@ RUN apt-get update && apt-get install -y \
     wget \
     ufw \
     fail2ban \
-    wireguard \
-    wireguard-tools \
     qrencode \
     && rm -rf /var/lib/apt/lists/*
 
@@ -47,8 +45,6 @@ RUN echo 'net.ipv6.conf.all.forwarding=1' >> /etc/sysctl.conf
 # Create router configuration directory
 RUN mkdir -p /etc/iptables-router/config
 RUN mkdir -p /var/log/iptables-router
-RUN mkdir -p /etc/wireguard
-RUN mkdir -p /etc/wireguard/clients
 
 # Copy router configuration files
 COPY config/ /etc/iptables-router/config/

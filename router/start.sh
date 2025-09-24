@@ -11,17 +11,10 @@ echo "Configuring network interfaces..."
 sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.forwarding=1
 
-# Setup WireGuard VPN
-echo "Setting up WireGuard VPN..."
-/usr/local/bin/wireguard/setup_wireguard.sh
-
 # Load SECURE firewall rules
 echo "Loading SECURE firewall configuration..."
 /usr/local/bin/configure_firewall.sh
 
-# Start WireGuard VPN
-echo "Starting WireGuard VPN server..."
-wg-quick up wg0 || echo "⚠️  WireGuard failed to start (may already be running)"
 
 # Start nginx for web interface
 echo "Starting router web interface..."
@@ -53,19 +46,11 @@ echo "   ✅ External Access: LIMITED to DMZ webserver only"
 echo "   ✅ Management Access: VPN only"
 echo "   ✅ Port Forwarding (DNAT/SNAT): ENABLED"
 echo "   ✅ NAT/Masquerading: ENABLED"
-echo "   🔒 WireGuard VPN Server: ENABLED"
 echo "   🔒 Unauthorized Traffic: BLOCKED & LOGGED"
 echo ""
 echo "🌐 Allowed External Access:"
 echo "   • HTTP (80) → DMZ Webserver (172.20.1.10)"
 echo "   • HTTPS (443) → DMZ Webserver (172.20.1.10)"
-echo "   • WireGuard VPN (51820/udp)"
-echo ""
-echo "📱 VPN Management Access:"
-echo "   • Generate client config: /usr/local/bin/wireguard/generate_client.sh [name] [ip]"
-echo "   • VPN Port: 51820/udp"
-echo "   • VPN Network: 172.20.4.0/24"
-echo "   • Full network access from VPN clients"
 echo ""
 echo "� SECURE: Firewall protection ACTIVE!"
 echo ""

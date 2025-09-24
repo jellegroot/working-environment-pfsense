@@ -12,17 +12,18 @@ set -euo pipefail
 # DMZ Network:        172.20.1.0/24 (Webserver)
 # Internal Network:   172.20.2.0/24 (Database) 
 # Office Network:     172.20.3.0/24 (Office Tools)
-# Management Network: 172.20.4.0/24 (Admin Access + WireGuard VPN)
+# Management Network: 172.20.4.0/24 (Admin Access)
 
 
 echo "Configuring iptables firewall..."
-# Flush alle bestaande rules en reset naar default DROP beleid
-iptables -F
-iptables -X
-iptables -t nat -F
-iptables -t nat -X
-iptables -t mangle -F
-iptables -t mangle -X
+# BELANGRIJK: Flush alleen onze eigen rules, niet Docker's chains
+iptables -F INPUT
+iptables -F FORWARD
+iptables -F OUTPUT
+# Bewaar Docker chains maar flush alleen onze custom rules
+iptables -t nat -F PREROUTING
+iptables -t nat -F POSTROUTING
+# Laat Docker's DOCKER chain intact
 
 # Default policies - ALLES BLOKKEREN
 iptables -P INPUT DROP
@@ -32,10 +33,6 @@ iptables -P OUTPUT ACCEPT
 # Loopback interface toestaan (voor lokale services)
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
-
-# ESTABLISHED en RELATED connections toestaan (voor terugkerend verkeer)
-iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # ===== EXTERNE TOEGANG RESTRICTIES =====
 
@@ -55,9 +52,6 @@ iptables -A FORWARD -s 172.20.4.0/24 -d 172.20.3.0/24 -p tcp --dport 22 -j ACCEP
 
 # Management subnet mag toegang tot extern gepubliceerde website (DMZ webserver)
 iptables -A FORWARD -s 172.20.4.0/24 -d 172.20.1.10 -p tcp -m multiport --dports 80,443 -j ACCEPT
-
-# WireGuard VPN server toegang vanaf extern
-iptables -A INPUT -i eth0 -p udp --dport 51820 -j ACCEPT
 
 # BLOKKEREN: Office toegang tot firewall zelf
 iptables -A INPUT -s 172.20.4.0/24 -j LOG --log-prefix "OFFICE-FW-BLOCK: " --log-level 4
@@ -89,16 +83,19 @@ iptables -A INPUT -s 172.20.3.0/24 -j DROP
 
 
 # ===== DATABASE SERVER RESTRICTIES =====
-# BLOKKEREN: Database Server uitgaand verkeer
-iptables -A FORWARD -s 172.20.2.0/24 -o eth0 -j LOG --log-prefix "DB-DROP: " --log-level 4
-iptables -A FORWARD -s 172.20.2.0/24 -d 172.20.1.0/24 -j LOG --log-prefix "DB-DMZ-BLOCK: " --log-level 4
-iptables -A FORWARD -s 172.20.2.0/24 -d 172.20.3.0/24 -j LOG --log-prefix "DB-OFFICE-BLOCK: " --log-level 4
-iptables -A FORWARD -s 172.20.2.0/24 -d 172.20.4.0/24 -j LOG --log-prefix "DB-MGMT-BLOCK: " --log-level 4
-iptables -A FORWARD -s 172.20.2.0/24 -j DROP
+
+# Laat geen enkele ESTABLISHED verbinding terug naar DB-subnet
+iptables -I FORWARD 1 -d 172.20.2.0/24 -m conntrack --ctstate ESTABLISHED,RELATED -j DROP
+#  Database Server mag ALLEEN reageren op inkomende database verbindingen (vanuit Office)
+iptables -I FORWARD 2 -s 172.20.2.0/24 -j LOG --log-prefix "DB-BLOCK: " --log-level 4
+iptables -I FORWARD 3 -s 172.20.2.0/24 -j DROP
+
+
 
 # BLOKKEREN: Database toegang tot firewall zelf
 iptables -A INPUT -s 172.20.2.0/24 -j LOG --log-prefix "DB-FW-BLOCK: " --log-level 4
 iptables -A INPUT -s 172.20.2.0/24 -j DROP
+
 
 
 # ===== DMZ WEBSERVER RESTRICTIES =====
@@ -124,8 +121,11 @@ iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j DNAT --to-destinatio
 # ===== UITGAANDE NAT (MASQUERADING) =====
 iptables -t nat -A POSTROUTING -s 172.20.3.0/24 -o eth0 -j MASQUERADE
 
-# ===== WIREGUARD VPN NAT =====
-iptables -t nat -A POSTROUTING -s 172.20.4.0/24 -o eth+ ! -d 172.20.0.0/16 -j MASQUERADE
+
+# ESTABLISHED en RELATED connections toestaan (voor terugkerend verkeer)
+# iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
 
 
 echo "Configuring ip forwarding."
@@ -146,4 +146,3 @@ iptables -t nat -L -n | head -15
 echo ""
 echo "   Secure firewall configuration applied!"
 echo "   External access is now limited to DMZ webserver only"
-echo "   Management access only via WireGuard VPN (172.20.4.0/24)"

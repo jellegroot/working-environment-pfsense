@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f // Simulate some activity
+            background: #f0f0f0;
 
             setInterval(()=> {
                     const activities=[ '[INFO] Heartbeat check - All networks operational',
@@ -226,37 +226,6 @@
                     <p><strong>Gateway:</strong> 172.20.4.1</p>
                     <p><strong>Services:</strong> Administrative Access</p>
                 </div>
-            </div>
-
-            <!-- WireGuard VPN -->
-            <div class="card">
-                <h2>🔒 WireGuard VPN Server</h2>
-                <div class="status-item">
-                    <span>VPN Status:</span>
-                    <span class="status-value status-online">ACTIVE</span>
-                </div>
-                <div class="status-item">
-                    <span>VPN Network:</span>
-                    <span class="status-value">172.20.4.0/24</span>
-                </div>
-                <div class="status-item">
-                    <span>VPN Server IP:</span>
-                    <span class="status-value">172.20.4.1</span>
-                </div>
-                <div class="status-item">
-                    <span>Listen Port:</span>
-                    <span class="status-value">51820/udp</span>
-                </div>
-                <div class="status-item">
-                    <span>Connected Clients:</span>
-                    <span class="status-value" id="vpnClients">0</span>
-                </div>
-                <div class="status-item">
-                    <span>Access Level:</span>
-                    <span class="status-value status-online">Full Network Access</span>
-                </div>
-                <button class="btn" onclick="generateVPNClient()">📱 Generate Client Config</button>
-                <button class="btn btn-secondary" onclick="showVPNStatus()">📊 VPN Status</button>
             </div>
 
             <!-- Port Forwarding -->
